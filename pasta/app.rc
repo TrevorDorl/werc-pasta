@@ -1,0 +1,30 @@
+fn conf_enable_pasta {
+    pasta_uri=$conf_wd
+    #pasta_dirs=$*
+    conf_enable_app pasta
+}
+
+fn pasta_init {
+        handler_body_main='pasta_body'
+}
+
+
+fn pasta_body {
+    cat apps/pasta/pasta.tpl
+    if(~ $REQUEST_METHOD POST){
+        filename=`{/usr/bin/dd if'='/dev/urandom bs'='40 count'='1 >[2]/dev/null | od -N3 -An -t dL}
+        #paste=`{echo $post_arg_pasta | sed -e 's/</\&lt;/g' -e 's/>/\&gt;/g'}
+        echo $post_arg_pasta > $sitedir$pasta_uri$filename
+        echo '<pre>'
+        echo $post_arg_pasta
+        echo '</pre>'
+        echo '<meta http-equiv="refresh" content="0;URL='$pasta_uri$filename'" />'
+      }
+    if(! ~ $pasta_uri $conf_wd){
+        echo '<pre>'
+        sed -e 's/</\&lt;/g' -e 's/>/\&gt;/g' $sitedir$req_path
+        echo '</pre>'
+      }
+
+}
+
